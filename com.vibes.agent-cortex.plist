@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.vibes.agent-cortex</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/donalocallaghan/workspace/vibes/agent_cortex/scripts/serve-launchd.sh</string>
+    </array>
+
+    <!-- Run at login and keep alive -->
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <dict>
+        <!-- Restart on crash, but not if cleanly exited -->
+        <key>SuccessfulExit</key>
+        <false/>
+    </dict>
+
+    <!-- Throttle restarts: wait 5 seconds between crashes -->
+    <key>ThrottleInterval</key>
+    <integer>5</integer>
+
+    <!-- Logging -->
+    <key>StandardOutPath</key>
+    <string>/Users/donalocallaghan/Library/Logs/agent-cortex.out.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/donalocallaghan/Library/Logs/agent-cortex.err.log</string>
+
+    <!-- Working directory -->
+    <key>WorkingDirectory</key>
+    <string>/Users/donalocallaghan/workspace/vibes/agent_cortex</string>
+</dict>
+</plist>

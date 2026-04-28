@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.env
+*.db
+*.db-*
+data/
+tmp/
+coverage/
+register-codex.sh
