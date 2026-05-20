@@ -47,10 +47,10 @@ Response:
 2. Call `filter_learnings` with codebase area filter `["transformer"]`
 3. Present combined results
 
-## Integration with Beads
+## Integration with Task Context
 
-When starting work on a bead, the natural flow is:
-1. `bd show <id>` to understand the task
+When starting work, the natural flow is:
+1. Read the current task source (pinned thread, issue, PR, spec, or planning note)
 2. `/recall` with the task's domain/area to load relevant learnings
 3. Apply learnings during implementation
 4. `/learn` to capture any new patterns discovered

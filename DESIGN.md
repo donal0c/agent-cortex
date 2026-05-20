@@ -139,28 +139,26 @@ CREATE TABLE learning_links (
 | `link_learnings` | Create typed relationships between learnings. |
 | `reactivate_learning` | Un-deprecate a learning. |
 
-## Beads Integration
+## Task-Context Integration
 
-This is where it gets interesting. Beads tracks tasks; Agent Cortex tracks knowledge.
-They complement each other at specific workflow touchpoints:
+Agent Cortex tracks knowledge, not project work. It should integrate with whatever task context the user is actually using: a pinned Codex thread, GitHub issue, Linear ticket, PR, Markdown spec, or local planning note. Beads was part of an earlier workflow and is now historical context only.
 
-### 1. Pre-Work Recall (when starting a bead)
+### 1. Pre-Work Recall
 
-When an agent picks up a bead (`bd update <id> --status=in_progress`), the natural
-next step is to check learnings relevant to the work ahead. This can be:
+When an agent starts a task, the natural next step is to check learnings relevant to the work ahead. This can be:
 
 - **Manual**: User says "check your learnings for anything related to this work"
-- **Skill-driven**: A `/recall` skill that takes the bead's title/description,
-  extracts the codebase area, and queries Agent Cortex automatically
-- **Hook-driven**: A PostToolUse hook on `bd update` that auto-suggests relevant
-  learnings when status changes to in_progress
+- **Skill-driven**: A `/recall` skill that takes the current task description,
+  extracts the project/area, and queries Agent Cortex automatically
+- **Hook-driven**: A future integration that auto-suggests relevant learnings
+  when a task becomes active in the user's current tracker
 
-### 2. Post-Work Capture (when closing a bead)
+### 2. Post-Work Capture
 
-When closing a bead, prompt for learnings:
+When closing meaningful work, prompt for learnings:
 - **Manual**: User says "capture this in your learnings"
 - **Skill-driven**: A `/learn` skill that guides structured capture
-- **Hook-driven**: A Stop hook or post-close prompt that asks "any learnings from
+- **Hook-driven**: A Stop hook or closeout prompt that asks "any learnings from
   this work worth capturing?"
 
 ### 3. PR Review Integration
@@ -177,15 +175,15 @@ A `/learn-from-pr` skill could automate steps 2-5.
 ### 4. Cross-Session Context Recovery
 
 After compaction or new session:
-- `bd ready` shows what to work on (task context)
+- the pinned thread, issue, PR, spec, or planning note shows what to work on
 - `query_learnings` for the relevant area gives you institutional knowledge
 - Together they reconstruct full working context
 
-### 5. Bead-Learning References
+### 5. Task-Learning References
 
-Learnings can reference bead IDs in their `source_ref` field:
-- `source_type: 'task_completion'`, `source_ref: 'beads-abc'`
-- When reviewing a bead's history, you can find associated learnings
+Learnings can reference task artifacts in their `source_ref` field:
+- `source_type: 'task_completion'`, `source_ref: 'PR #123'`, `source_ref: 'Linear ABC-123'`, or `source_ref: 'memory/planning/status.md'`
+- When reviewing a task's history, you can find associated learnings
 
 ## Skills Integration
 
@@ -323,5 +321,5 @@ agent_cortex/
 
 ### Phase 8: Integration + Polish
 - MCP registration docs
-- Beads workflow documentation
+- Task-context workflow documentation
 - README

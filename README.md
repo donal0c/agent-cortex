@@ -70,7 +70,7 @@ Learnings start at confidence 1. Each time a learning is validated (via `reinfor
 
 ## Todos
 
-Lightweight to-do items for quick action capture. Unlike learnings (institutional knowledge) or beads (structured project work), todos are ephemeral sticky notes — capture fast, check the list, cross off, throw away.
+Lightweight to-do items for quick action capture. Unlike learnings (institutional knowledge), todos are ephemeral sticky notes — capture fast, check the list, cross off, throw away.
 
 - **Priority**: 1 (high), 2 (medium, default), 3 (low)
 - **Status lifecycle**: open → done / cancelled (or delete entirely)
@@ -126,11 +126,11 @@ claude mcp add -s user \
   agent-cortex -- node /path/to/agent_cortex/dist/index.js
 ```
 
-## Workflow with Beads
+## Workflow
 
-Agent Cortex complements beads (task tracking):
+Agent Cortex is intentionally smaller than a project-management system. Use it for recall and capture around the work already happening in the user's current toolchain:
 
-1. **Starting a task**: `bd show <id>` then `/recall` for relevant learnings
+1. **Starting a task**: read the current task/spec/thread context, then `/recall` for relevant learnings.
 2. **During work**: Agent applies known patterns from cortex; capture quick action items with `capture_todo`
 3. **After PR review**: `/learn-from-pr` to capture reviewer feedback
 4. **Closing a task**: `/learn` to capture any new patterns discovered; check `list_todos` for loose ends
