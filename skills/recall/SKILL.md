@@ -25,12 +25,13 @@ Query Agent Cortex for learnings relevant to the current work.
 
 2. **Run two queries in parallel:**
    - `query_learnings` — semantic search with a natural language query derived from the context
-   - `learnings_for_area` — area-based lookup if codebase areas are identifiable
+   - `filter_learnings` — structured lookup by project, area, tag, source type, or date when those filters are identifiable
 
 3. **Deduplicate and rank** the combined results by relevance and confidence.
 
 4. **Present findings concisely:**
    - List each relevant learning with its pattern, confidence level, and source
+   - If a learning points to a canonical file, surface the file path prominently and prefer reading that file over expanding the learning into a long answer
    - Highlight high-confidence learnings (confidence >= 3)
    - Note any examples (good/bad code) that are directly applicable
    - If no learnings found, say so clearly
@@ -43,7 +44,7 @@ User: "Check your learnings for anything about the transformer layer"
 
 Response:
 1. Call `query_learnings` with query: "transformer layer patterns and conventions"
-2. Call `learnings_for_area` with areas: ["transformer"]
+2. Call `filter_learnings` with codebase area filter `["transformer"]`
 3. Present combined results
 
 ## Integration with Beads
@@ -58,5 +59,6 @@ When starting work on a bead, the natural flow is:
 
 - Cast a wide net: search both by semantic meaning and by area
 - Pay attention to confidence scores — high-confidence learnings have been validated multiple times
+- Treat file-backed memory as canonical when a learning's `source_ref` is a durable file path
 - If a learning helped you, reinforce it with `reinforce_learning`
 - If a learning is wrong or outdated, flag it for deprecation

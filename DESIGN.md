@@ -16,6 +16,10 @@ Examples:
 - "PR #342 feedback: transformer tests need to mock the external API client, not call it directly"
 - "When working with the speckit templates, YAML anchors are preferred over duplication"
 
+When the source of truth is already a durable file, the learning should normally be a
+**pointer learning** rather than a duplicate summary. The file remains canonical; Cortex
+stores the retrieval hook, metadata, confidence, and source reference.
+
 Each learning has:
 - The pattern/rule itself
 - Why it matters (rationale)
@@ -124,7 +128,7 @@ CREATE TABLE learning_links (
 | Tool | Description |
 |------|-------------|
 | `query_learnings` | Semantic search across learnings. "What do I know about transformer patterns?" |
-| `learnings_for_area` | Get all active learnings for a codebase area + project combo. |
+| `filter_learnings` | Structured browse by project, codebase area, tags, source type, confidence, and date range. |
 | `get_learning` | Retrieve a single learning by ID with full detail. |
 | `review_learnings` | Stats: total, by project, by area, by confidence level, recent additions. |
 
@@ -191,9 +195,10 @@ Triggered by: "capture this learning", "remember this pattern", "save this to le
 
 Workflow:
 1. Takes the current conversation context
-2. Asks clarifying questions if needed (what area? which project?)
-3. Calls `capture_learning` with structured input
-4. Confirms what was captured
+2. Checks whether the knowledge already exists as a durable file; if yes, captures a pointer learning instead of duplicating the file
+3. Asks clarifying questions if needed (what area? which project?)
+4. Calls `capture_learning` with structured input
+5. Confirms what was captured
 
 ### `/recall` Skill
 
@@ -202,8 +207,8 @@ Triggered by: "check your learnings", "what do you know about", "any learnings f
 Workflow:
 1. Takes the current work context (bead description, file being edited, area)
 2. Calls `query_learnings` with semantic search
-3. Calls `learnings_for_area` for the specific codebase area
-4. Presents relevant learnings in a concise format
+3. Calls `filter_learnings` for structured project/area/date/tag filtering when useful
+4. Presents relevant learnings in a concise format, preferring canonical file paths when a pointer learning is returned
 5. Asks "should I apply any of these?"
 
 ### `/learn-from-pr` Skill
@@ -265,7 +270,7 @@ agent_cortex/
     tools/
       capture.ts          -- capture_learning
       query.ts            -- query_learnings (semantic search)
-      area.ts             -- learnings_for_area
+      filter.ts           -- filter_learnings
       get.ts              -- get_learning
       reinforce.ts        -- reinforce_learning
       deprecate.ts        -- deprecate_learning
@@ -304,7 +309,7 @@ agent_cortex/
 
 ### Phase 5: Read Tools
 - query_learnings (semantic search)
-- learnings_for_area
+- filter_learnings
 - get_learning
 - review_learnings (stats)
 

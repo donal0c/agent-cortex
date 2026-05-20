@@ -4,6 +4,14 @@ An MCP server for persistent AI agent learnings. Captures patterns, conventions,
 
 Unlike Open Brain (which captures human thoughts), Agent Cortex is the agent's institutional knowledge that survives context switches, session boundaries, and compaction cycles.
 
+## Relationship to File-Backed Memory
+
+Agent Cortex can work alongside a Git-backed memory vault such as `work-agent-memory`. In that setup, files remain canonical and Cortex is the retrieval/briefing layer.
+
+When a durable wiki page, decision, runbook, or source note already exists on disk, capture a **pointer learning** rather than duplicating the full content. The learning should say what to read and when to read it, with `source_ref` set to the file path.
+
+Use full Cortex-native learnings for concise rules, gotchas, conventions, and mistakes that do not yet warrant a durable file. If a learning grows into a process or synthesis, promote it to files and update Cortex to point at the file.
+
 ## Architecture
 
 - **MCP SDK** (`@modelcontextprotocol/sdk`) with stdio transport
@@ -142,6 +150,18 @@ Agent Cortex complements beads (task tracking):
 - `confidence` — integer, starts at 1, increases with reinforcement
 - `active` — boolean, false when deprecated
 - `embedding` — 1536-dim vector (HNSW indexed)
+
+### Pointer learning convention
+
+For file-backed memory, prefer this shape:
+
+- `pattern`: "For <topic>, read <file path> before answering or acting."
+- `rationale`: why that file is canonical for the topic.
+- `source_ref`: relative or absolute file path.
+- `project`: the memory repo or downstream project name.
+- `examples.context`: when the pointer should be used.
+
+Pointer learnings are intentionally short. The file holds the detail; Cortex helps agents find it.
 
 ### `todos` table
 

@@ -20,7 +20,13 @@ Capture a learning into Agent Cortex for future recall.
 
 1. **Identify the learning** from the current conversation context. Ask the user to clarify if the pattern isn't obvious.
 
-2. **Determine the key fields:**
+2. **Check for durable-file ownership.** If the knowledge already lives in a durable file (wiki page, decision, runbook, source note, project doc), capture a pointer learning instead of duplicating the file's content:
+   - **pattern**: "For <topic>, read <file path> before answering or acting."
+   - **rationale**: Why that file is canonical.
+   - **source_ref**: The file path.
+   - **examples.context**: When to use the pointer.
+
+3. **Determine the key fields:**
    - **pattern**: The rule, convention, or insight (clear, actionable statement)
    - **rationale**: Why this matters (optional but valuable)
    - **source_ref**: Where it came from — PR URL, file path, bead ID, or conversation context
@@ -28,9 +34,9 @@ Capture a learning into Agent Cortex for future recall.
    - **codebase_areas**: Which architectural layers/domains (auto-extracted if omitted)
    - **examples**: Good/bad code snippets if applicable
 
-3. **Call `capture_learning`** with the structured input. Let the auto-extraction handle `codebase_areas` and `tags` unless the user specified them explicitly.
+4. **Call `capture_learning`** with the structured input. Let the auto-extraction handle `codebase_areas` and `tags` unless the user specified them explicitly.
 
-4. **Confirm** what was captured. Show the learning ID, pattern, and extracted metadata.
+5. **Confirm** what was captured. Show the learning ID, pattern, and extracted metadata.
 
 ## Example Interaction
 
@@ -48,4 +54,5 @@ Response: Call `capture_learning` with:
 - Always try to capture the rationale (the "why") alongside the pattern (the "what")
 - If the learning came from a PR review, include the PR URL as source_ref
 - If capturing from a debugging session, include relevant file paths
+- If a durable file is canonical, make Cortex point to it; do not store a long duplicate summary
 - For code style conventions, include good/bad examples when possible
