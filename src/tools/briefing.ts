@@ -19,6 +19,30 @@ interface BriefingItem {
 }
 
 const MAX_PATTERN_LENGTH = 360;
+const MIN_POINTER_TOKEN_OVERLAP = 2;
+const MIN_LEARNING_TOKEN_OVERLAP = 2;
+const STOP_WORDS = new Set([
+  'about',
+  'agent',
+  'alludium',
+  'around',
+  'before',
+  'briefing',
+  'current',
+  'doing',
+  'from',
+  'into',
+  'need',
+  'project',
+  'platform',
+  'starting',
+  'state',
+  'task',
+  'that',
+  'this',
+  'work',
+  'working',
+]);
 
 function truncate(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text;
@@ -36,6 +60,36 @@ function looksLikeFilePointer(sourceRef: string | null): boolean {
   );
 }
 
+function tokenSet(text: string): Set<string> {
+  const tokens = text
+    .toLowerCase()
+    .match(/[a-z][a-z0-9-]{2,}/g) ?? [];
+  return new Set(tokens.filter((token) => !STOP_WORDS.has(token)));
+}
+
+function overlapCount(taskTokens: Set<string>, learning: LearningWithScore): number {
+  const haystack = tokenSet([
+    learning.pattern,
+    learning.rationale ?? '',
+    learning.source_ref ?? '',
+    learning.project,
+    ...learning.codebase_areas,
+    ...learning.tags,
+  ].join(' '));
+
+  let count = 0;
+  for (const token of taskTokens) {
+    if (haystack.has(token)) count += 1;
+  }
+  return count;
+}
+
+function isBriefingCandidate(taskTokens: Set<string>, learning: LearningWithScore): boolean {
+  if (/^\s*todo\s*:/i.test(learning.pattern)) return false;
+  if (looksLikeFilePointer(learning.source_ref)) return overlapCount(taskTokens, learning) >= MIN_POINTER_TOKEN_OVERLAP;
+  return learning.confidence >= 2 && overlapCount(taskTokens, learning) >= MIN_LEARNING_TOKEN_OVERLAP;
+}
+
 function formatBriefingItem(learning: LearningWithScore): BriefingItem {
   return {
     id: learning.id,
@@ -50,15 +104,20 @@ function formatBriefingItem(learning: LearningWithScore): BriefingItem {
 
 export async function getBriefing(args: BriefingArgs) {
   const limit = Math.min(Math.max(args.limit ?? 5, 1), 5);
+  const candidateLimit = Math.max(limit * 5, 25);
+  const taskTokens = tokenSet(args.task);
   const embedding = await generateEmbedding(args.task);
 
   const results = await hybridSearch(args.task, embedding, {
     project: args.project,
     active: true,
-    limit,
+    limit: candidateLimit,
   });
+  const filtered = results
+    .filter((learning) => isBriefingCandidate(taskTokens, learning))
+    .slice(0, limit);
 
-  if (results.length === 0) {
+  if (filtered.length === 0) {
     return {
       content: [
         {
@@ -79,7 +138,7 @@ export async function getBriefing(args: BriefingArgs) {
     };
   }
 
-  const items = results.map(formatBriefingItem);
+  const items = filtered.map(formatBriefingItem);
   const pointerCount = items.filter((item) => item.pointer).length;
 
   return {
@@ -104,4 +163,3 @@ export async function getBriefing(args: BriefingArgs) {
     ],
   };
 }
-
