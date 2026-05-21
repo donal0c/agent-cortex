@@ -128,6 +128,7 @@ CREATE TABLE learning_links (
 | Tool | Description |
 |------|-------------|
 | `query_learnings` | Semantic search across learnings. "What do I know about transformer patterns?" |
+| `get_briefing` | Small pre-task briefing: task text in, at most 5 pointer-style learnings out. |
 | `filter_learnings` | Structured browse by project, codebase area, tags, source type, confidence, and date range. |
 | `get_learning` | Retrieve a single learning by ID with full detail. |
 | `review_learnings` | Stats: total, by project, by area, by confidence level, recent additions. |
@@ -150,6 +151,9 @@ When an agent starts a task, the natural next step is to check learnings relevan
 - **Manual**: User says "check your learnings for anything related to this work"
 - **Skill-driven**: A `/recall` skill that takes the current task description,
   extracts the project/area, and queries Agent Cortex automatically
+- **Briefing-driven**: `get_briefing` returns a capped list of relevant pointer
+  learnings so agents can decide whether to open a canonical file without
+  dumping wiki content into context.
 - **Hook-driven**: A future integration that auto-suggests relevant learnings
   when a task becomes active in the user's current tracker
 
@@ -204,8 +208,8 @@ Triggered by: "check your learnings", "what do you know about", "any learnings f
 
 Workflow:
 1. Takes the current work context (bead description, file being edited, area)
-2. Calls `query_learnings` with semantic search
-3. Calls `filter_learnings` for structured project/area/date/tag filtering when useful
+2. Calls `get_briefing` first for a capped, progressive-disclosure result
+3. Calls `query_learnings` or `filter_learnings` only when a deeper Cortex pass is useful
 4. Presents relevant learnings in a concise format, preferring canonical file paths when a pointer learning is returned
 5. Asks "should I apply any of these?"
 

@@ -36,6 +36,7 @@ Use full Cortex-native learnings for concise rules, gotchas, conventions, and mi
 | Tool | Description |
 |------|-------------|
 | `query_learnings` | Semantic search by meaning. "transformer error handling patterns" |
+| `get_briefing` | Short pre-task briefing with at most 5 pointer-style results. |
 | `filter_learnings` | Browse learnings by tags, source type, project, areas, date range, confidence. |
 | `get_learning` | Retrieve a single learning by ID. |
 | `review_learnings` | Aggregate stats: totals, by project, by area, confidence distribution. |
@@ -130,7 +131,7 @@ claude mcp add -s user \
 
 Agent Cortex is intentionally smaller than a project-management system. Use it for recall and capture around the work already happening in the user's current toolchain:
 
-1. **Starting a task**: read the current task/spec/thread context, then `/recall` for relevant learnings.
+1. **Starting a task**: read the current task/spec/thread context, then use `get_briefing` or `/recall` for a small set of relevant learnings.
 2. **During work**: Agent applies known patterns from cortex; capture quick action items with `capture_todo`
 3. **After PR review**: `/learn-from-pr` to capture reviewer feedback
 4. **Closing a task**: `/learn` to capture any new patterns discovered; check `list_todos` for loose ends

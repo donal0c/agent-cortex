@@ -23,29 +23,34 @@ Query Agent Cortex for learnings relevant to the current work.
    - What project? (specific project name or global)
    - Any specific concern? (e.g., error handling, testing patterns)
 
-2. **Run two queries in parallel:**
+2. **Start with `get_briefing`:**
+   - Use the task description as the query.
+   - Pass a project filter when it is obvious.
+   - Treat returned file paths as pointers, not as permission to deep-read everything.
+
+3. **Only deepen when needed:**
    - `query_learnings` — semantic search with a natural language query derived from the context
    - `filter_learnings` — structured lookup by project, area, tag, source type, or date when those filters are identifiable
 
-3. **Deduplicate and rank** the combined results by relevance and confidence.
+4. **Deduplicate and rank** the combined results by relevance and confidence.
 
-4. **Present findings concisely:**
+5. **Present findings concisely:**
    - List each relevant learning with its pattern, confidence level, and source
    - If a learning points to a canonical file, surface the file path prominently and prefer reading that file over expanding the learning into a long answer
    - Highlight high-confidence learnings (confidence >= 3)
    - Note any examples (good/bad code) that are directly applicable
    - If no learnings found, say so clearly
 
-5. **Ask** if any learnings should be applied to the current work, or if the user wants to reinforce/update any.
+6. **Ask** if any learnings should be applied to the current work, or if the user wants to reinforce/update any.
 
 ## Example Interaction
 
 User: "Check your learnings for anything about the transformer layer"
 
 Response:
-1. Call `query_learnings` with query: "transformer layer patterns and conventions"
-2. Call `filter_learnings` with codebase area filter `["transformer"]`
-3. Present combined results
+1. Call `get_briefing` with task: "transformer layer patterns and conventions"
+2. If the briefing is thin, call `query_learnings` or `filter_learnings`
+3. Present concise results
 
 ## Integration with Task Context
 

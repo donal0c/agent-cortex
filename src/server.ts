@@ -9,6 +9,7 @@ import { reviewLearnings } from './tools/review.js';
 import { filterLearningsTool } from './tools/filter.js';
 import { linkLearnings, getLinked } from './tools/link.js';
 import { captureTodo, listTodosTool, updateTodoTool, deleteTodoTool } from './tools/todo.js';
+import { getBriefing } from './tools/briefing.js';
 
 const sourceTypeEnum = z.enum([
   'pr_review', 'code_review', 'debugging',
@@ -159,6 +160,32 @@ export function createServer(): McpServer {
     },
   }, async (args) => {
     return queryLearnings(args);
+  });
+
+  server.registerTool('get_briefing', {
+    title: 'Get Briefing',
+    description:
+      'Return a short read-only pre-task briefing from Agent Cortex. Use this at task start ' +
+      'when you need a small set of relevant pointer learnings without loading broad wiki content.',
+    inputSchema: {
+      task: z.string().min(1).max(2000).describe(
+        'The current task, question, or work description to brief against'
+      ),
+      project: z.string().optional().describe(
+        'Optional project filter. Global learnings are included automatically.'
+      ),
+      limit: z.number().int().min(1).max(5).default(5).describe(
+        'Maximum briefing items to return. Capped at 5 to avoid context bloat.'
+      ),
+    },
+    annotations: {
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
+    },
+  }, async (args) => {
+    return getBriefing(args);
   });
 
   server.registerTool('filter_learnings', {
